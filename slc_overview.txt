@@ -1,0 +1,3 @@
+CPU: c51f04x
+No floating point used
+Internal RAM size: 256

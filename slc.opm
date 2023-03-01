@@ -1,0 +1,4 @@
+-G "c:\firmware_local\smartview fw\slc firmware source code v2.01"
+-err "slc.err"
+-r
+-f "slc.mak"

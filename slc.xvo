@@ -1,0 +1,11 @@
+-tcfg disilabsjtg51.cfg -D dev,-
+--rocfg_ecprotocol=jtag
+--load_application_download=false
+--load_application_signal=false
+--load_application_program_reset=false
+--load_application_target_reset=false
+--load_application_goto_main=false
+-a 16
+-b 16
+-s 26
+-C c51f04x

@@ -1,0 +1,8 @@
+-usb
+-dir "c:\firmware_local\smartview fw\slc firmware source code v2.01"
+-actions=FPV
+"slc.hex"
+-err "slc.err"
+-go
+-level=0
+-ecprotocol=jtag

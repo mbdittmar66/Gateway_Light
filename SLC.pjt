@@ -1,0 +1,257 @@
+;Codewright Project File (do not remove or modify this line)
+[ProjInit]
+ConfigSetExtMode=2
+ProjSetConfigFlags=0x04110940
+
+[Files]
+.\utils.c
+.\main.c
+.\SLC_Init.c
+.\SLC_Init.h
+.\serial.c
+.\spi.c
+.\stdlib.c
+.\timers.c
+.\c8051F040.h
+.\main.h
+.\serial.h
+.\spi.h
+.\stdlib.h
+.\timers.h
+.\utils.h
+.\slc_cstart.asm
+.\version.h
+.\flash.c
+.\flash.h
+.\SlProtocol.h
+.\pelco.h
+
+[Ede]
+Toolchain=c:\program files (x86)\tasking\cc51 v7.2r6\etc\cc51.dol
+ToolchainName=TASKING Tools for 8051 v7.2r6
+ProjectDir=c:\firmware_local\smartview fw\slc firmware source code v2.01
+EdeVersion=99.9r9 (Build 150)
+CodeWrightVersion=6.5b
+DefBuildSettings=True
+SaveFiles=True
+AbsolutePathNames=False
+StopAfterError=True
+KeepTmpFiles=False
+ExtMakefile=False
+ExtMakefileName=
+UserMakefile=False
+UserMakefileName=
+UseMakeOptions=False
+MakeOptions=
+CheckTarget=True
+ExtDebugger=False
+ExtDebuggerName=
+UseDOSShell=False
+SaveOptionMethod=0
+SaveOptionFileName=
+LoadOptionFileName=
+LoadOptionStartup=False
+GroupProc=0
+GroupMISRAC=0
+GroupC=0
+GroupMpp=0
+GroupAsm=0
+GroupLL=0
+GroupXvw=0
+GroupFlash=0
+GroupList=GroupProc,GroupMISRAC,GroupC,GroupMpp,GroupAsm,GroupLL,GroupXvw,GroupFlash
+
+[Directories]
+BinDir1=$(PRODDIR)\bin
+IncDir1=$(PRODDIR)\include
+LibDir1=$(PRODDIR)\lib
+
+[DefaultOptions]
+CpuNumeric=0
+CpuSelFamily=1
+CpuFamily=CpuFamilySilabs
+Cpu=CpuC8051F04x
+LkRamSizeNew=LkRamSizeUser256
+MppClrEa=1
+CompAClear=1
+LkStackSize=100
+LkHeapSize=50
+LkVirtStack=1000
+LkProtect=1
+CompSmall=0
+CompLarge=1
+CompOptim=CompO0
+CompOc=0
+CompOd=0
+CompOf=0
+CompOh=0
+CompOi=0
+CompOk=0
+CompOm=0
+CompOp=0
+CompOs=0
+CompOt=0
+CompExtendAuto=0
+CompRamStrings=0
+CompRomStrings=1
+CompVarargs=100
+CompFastParameterArea=0
+CompPrintFormConst=1
+CompScanFormConst=1
+LkVStack=1
+LkHex=1
+LkFpLib=0
+LkNoFo=1
+LkFo=0
+LkLine=1
+LkPublic=1
+LkLocal=1
+XvwSim=0
+XvwSilabsJTAG=1
+XvwBaud=XvwBaud115200
+XvwInitialDownload=0
+XvwSimOutput=0
+XvwSimInput=0
+FlashSilabsAdapter=FlashSilabsUSB
+FlashBaud=FlashBaudAuto
+FlashDialog=1
+
+[Options]
+FileList=
+
+[Project]
+ConfigSetLinkDBFilename='C:\Program Files (x86)\TASKING\cc51 v7.2r6\bin\cwright.ldb'
+ConfigSetMarkDBFilename='C:\Program Files (x86)\TASKING\cc51 v7.2r6\bin\cwright.mrk'
+ConfigSetSymbolDBFilename='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC.sbl'
+EditSetPath=''
+elimiters=.asm,^A-Za-z0-9_
+ExtColorsAssoc='.asp',5
+ExtChromSysSetCwd='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01'
+SrchSetFlags=0x041e28e9
+SrchSetAgainFlags=0x041e28cb,0
+SrchSetAgainFlags=0x06172009,1
+FileSortMode=0x0
+
+aLexer='.asp','ASP'
+ExtSetDelimiters=.asp,^A-Za-z0-9_
+ExtSetEmbeddedLanguages='.asp',0x0000000d,'<%@[ \t\n]+language="*([a-z]+)"*[ \t\n]*%>',1,'<%',1,'%>' VBScript .bas JavaScript .js
+ExtSetEmbeddedLanguages='.asp',0x00000003,'<[ \t\n]*meta[ \t]+http-equiv[ \t\n]*=[ \t\n]*"content-script-type"[ \t\n]([-a-z \t]+[ \t])?content[ \t\n]*=[ \t\n]*"(text/)?([a-z]+)"[ \t\n]*[-a-z]*>',3,'<[ \t\n]*script([ \t\n]*runat[ \t\n]*=[ \t\n]*server)?([ \t]+language[ \t\n]*=[ \t\n]*"(text/)?([a-z]+)")?[a-z= \t\n]*>',4,'</[ \t\n]*script[ \t\n]*>' JavaScript .js VBScript .bas
+ExtColorsAssoc='.awk',5
+ExtChromaLexer='.awk','AWK'
+ExtSetDelimiters=.awk,^A-Za-z0-9_
+ExtColorsAssoc='.bas',5
+ExtChromaLexer='.bas','BASIC'
+ExtSetDelimiters=.bas,^A-Za-z0-9_
+ExtColorsAssoc='.bat',5
+ExtChromaLexer='.bat','Batch'
+ExtSetDelimiters=.bat,^A-Za-z0-9_
+ExtColorsAssoc='.c',5
+ExtChromaLexer='.c','C'
+ExtSetDelimiters=.c,^A-Za-z0-9_
+ExtSetEmbeddedLanguages='.c',0x00000019,'',1,'__?(asm)[ \t\n]*{',1,'}' asm .asm
+ExtColorsAssoc='.cfml',5
+ExtChromaLexer='.cfml','CFML'
+ExtSetDelimiters=.cfml,^A-Za-z0-9_
+ExtSetEmbeddedLanguages='.cfml',0x0000000b,'<[ \t\n]*meta[ \t]+http-equiv[ \t\n]*=[ \t\n]*"content-script-type"[ \t\n]([-a-z \t]+[ \t])?content[ \t\n]*=[ \t\n]*"(text/)?([a-z]+)"[ \t]*[-a-z]*>',3,'<[ \t\n]*script([ \t\n]+language[ \t\n]*=[ \t]*"(text/)?([a-z]+)")?[ \t\n]*>',3,'</[ \t\n]*script[ \t\n]*>' JavaScript .js
+ExtSetEmbeddedLanguages='.cfml',0x00000015,'',3,'<CFSCRIPT>',3,'</CFSCRIPT>' CFscript .cfm
+ExtColorsAssoc='.cob',5
+ExtChromaLexer='.cob','COBOL'
+ExtSetDelimiters=.cob,^A-Za-z0-9_
+ExtColorsAssoc='.cpp',5
+ExtChromaLexer='.cpp','C++'
+ExtSetDelimiters=.cpp,^A-Za-z0-9_
+ExtColorsAssoc='.cxx',5
+ExtChromaLexer='.cxx','C++'
+ExtSetDelimiters=.cxx,^A-Za-z0-9_
+ExtColorsAssoc='.cs',5
+ExtChromaLexer='.cs','C#'
+ExtSetDelimiters=.cs,^A-Za-z0-9_
+ExtColorsAssoc='.h',5
+Ext;Codewright Project Space File (do not remove or modify this line)
+[State]
+SysSetCwd='C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36'
+SrchSetFlags=0x041a28e9
+SrchSetAgainFlags=0x041a28cb,0
+SrchSetAgainFlags=0x06172009,1
+FileSortMode=0x0
+_StateView='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c',19,4,1784,806,-1,-1,1170,39,1127,1,1,'',0x00100008,0,80,0,0,''
+_StateView='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\main.c',25,25,1789,819,0,821,129,31,126,1,2,'',0x00100008,0,80,0,0,''
+_StateView='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c',443,33,1664,528,-1,-1,483,33,472,1,5,'',0x00100008,0,80,0,0,''
+_StateView='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h',75,75,1082,380,-1,-1,22,34,4,1,6,'',0x00100008,0,80,0,0,''
+_StateView='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\flash.c',0,0,1789,315,-1,-1,855,36,855,1,3,'',0x00100008,0,80,0,0,''
+_StateView='C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36\utils.c',175,175,1664,528,0,751,928,17,901,1,4,'',0x00100028,0,80,0,0,''
+_StateBuffer='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c',0x0c00048e,1170,39,25,'5 9','',0x0,'',1,72,1,0
+_StateBuffer='C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36\utils.c',0x0c00048e,928,17,25,'5 9','',0x0,'',1,72,0,0
+_StateBuffer='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\main.c',0x0400048e,129,31,25,'5 9','',0x0,'',1,72,0,0
+_StateBuffer='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c',0x0c00048e,483,33,25,'5 9','',0x0,'',1,72,0,0
+_StateBuffer='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h',0x0400048e,32,34,25,'5 9','',0x0,'',1,72,0,0
+_StateBuffer='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\flash.c',0x0400048e,855,36,25,'5 9','',0x0,'',1,72,0,0
+_StateHistory=FILELIST,'C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.0\SLC_Init.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\version.h','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','C:\firmware_local\SmartView FW\15050-FW (JCS)\Working\JCS Firmware Source Code V1.35\utils.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\flash.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\main.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c','C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36\utils.c'
+_StateHistory=SEARCH,'autohome','auto','usAutoReturnSeconds','relative','overtemp','extended','SerSlcExtStatusPayload','SLC_MISC_SETUP','SwSearchLightUp','SelectSearchlight'
+_StateHistory=EDITFILE,'C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\c8051F040.h','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\version.h','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\flash.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','C:\firmware_local\SmartView FW\15050-FW (JCS)\Working\JCS Firmware Source Code V1.35\utils.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c','C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36\utils.c'
+_StateHistory=DIRECTORY,'C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01'
+_StateHistory=DOCUMENTVISIT,'415         1           C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h','4009        50          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','32          34          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SlProtocol.h','186         79          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\main.c','544         1           C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC_Init.c','4601        39          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','928         17          C:\firmware_local\SmartView FW\15050-FW (JCS)\Released\JCS Firmware Source Code v1.36\utils.c','4452        39          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\utils.c','855         36          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\flash.c','129         31          C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\main.c'
+_StateDocumentVisit=10
+
+[Project]
+ConfigSetUserWorkspace=''
+ConfigSetUserWorkspaceParser=''
+ConfigSetUserWorkspaceTimeStamp=0
+ConfigSetUserWorkspaceAutoSync=0
+
+[Project.".\SLC.pjt"]
+
+limiters=.pl,^A-Za-z0-9_
+ExtColorsAssoc='.src',5
+ExtChromaLexer='.src','Assembly'
+ExtIndentEnableAssoc='.src',256
+ExtSetDelimiters=.src,^A-Za-z0-9_
+ExtColorsAssoc='.dol',5
+ExtChromaLexer='.dol','Doil'
+ExtIndentEnableAssoc='.dol',256
+ExtSetDelimiters=.dol,^A-Za-z0-9_
+ExtColorsAssoc='.htm',5
+ExtChromaLexer='.htm','HTML'
+ExtSetDelimiters=.htm,^A-Za-z0-9_
+ExtColorsAssoc='.html',5
+ExtChromaLexer='.html','HTML'
+ExtSetDelimiters=.html,^A-Za-z0-9_
+ExtSetEmbeddedLanguages='.html',0x0000000b,'<[ \t\n]*meta[ \t]+http-equiv[ \t\n]*=[ \t\n]*"content-script-type"[ \t\n]([-a-z \t]+[ \t])?content[ \t\n]*=[ \t\n]*"(text/)?([a-z]+)"[ \t]*[-a-z]*>',3,'<[ \t\n]*script([ \t\n]+language[ \t\n]*=[ \t]*"(text/)?([a-z]+)")?[ \t\n]*>',3,'</[ \t\n]*script[ \t\n]*>' JavaScript .js
+ExtColorsAssoc='.hpp',5
+ExtChromaLexer='.hpp','C++'
+ExtSetDelimiters=.hpp,^A-Za-z0-9_
+ExtColorsAssoc='.ini',5
+ExtSetDelimiters=.ini,^A-Za-z0-9_
+ExtChromaLexer='.ini','Ini'
+ExtColorsAssoc='.java',5
+ExtChromaLexer='.java','Java'
+ExtSetDelimiters=.java,^A-Za-z0-9_
+ExtColorsAssoc='.jsp',5
+ExtChromaLexer='.jsp','JaveServer Pages'
+ExtSetDelimiters=.jsp,^A-Za-z0-9_
+ExtSetEmbeddedLanguages='.jsp',0x0000000d,'<%@[ \t\n]*page([^%]+|[^%]*%[^<%>]+)language="([a-z0-9]+)"([^%]+|[^%]*%[^>])*%>',2,'<%[^@]',1,'%>' JavaScript .java
+ExtColorsAssoc='.mak',5
+ExtChromaLexer='.mak','Makefile'
+
+[Tools]
+ToolDeleteList 
+ToolAddCmd='$_custom_tool_$_1','API Database Editor',1342177312,'cwtedit.exe'
+
+[Editor]
+_RestoreSysFlags=0x43097fc8, 0xfffffffc, 0
+_RestoreSysFlags=0x40010001, 0xffffffff, 1
+CollapseMode=0x13080610
+
+[Compiler]
+TagSetCmd='"${HOME}${WTAGS}" -oc -d -t"${TAGFILE}.tag" -p"${TAGFILE}.ptg"',0x8000060
+BrowseSetFile='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC.ptg'
+TagSetFile='C:\firmware_local\SmartView FW\SLC Firmware Source Code v2.01\SLC.tag'
+CompilerAddCmdEx='TASKING src','!EdeExecCompile()',1073741920,'!EdeExecCompile()',1073741920,'',1073741984,'',0,'',1073741984,'',0,'',1073741856,'',0,'_TaskingErrorInfo','','','c:\firmware_local\smartview fw\slc firmware source code v2.01\slc.err',''
+CompilerAddResponse='TASKING src',
+CompilerAddCmdEx='TASKING asm','!EdeExecCompile()',1073741920,'!EdeExecCompile()',1073741920,'',1073741984,'',0,'',1073741984,'',0,'',1073741856,'',0,'_TaskingErrorInfo','','','c:\firmware_local\smartview fw\slc firmware source code v2.01\slc.err',''
+CompilerAddResponse='TASKING asm',
+CompilerAddCmdEx='$_cw_proj_hash_$','',1073741920,'',1073741920,'!EdeExecBuild()',1073741984,'',0,'!EdeExecRebuild()',1073741984,'',0,'!EdeExecDebug()',1073741856,'',0,'_TaskingErrorInfo','','','c:\firmware_local\smartview fw\slc firmware source code v2.01\slc.err','%x'
+CompilerAddResponse='$_cw_proj_hash_$',
+CompilerAddCmdEx='TASKING c','!EdeExecCompile()',1073741920,'!EdeExecCompile()',1073741920,'',1073741984,'',0,'',1073741984,'',0,'',1073741856,'',0,'_TaskingErrorInfo','','','c:\firmware_local\smartview fw\slc firmware source code v2.01\slc.err',''
+CompilerAddResponse='TASKING c',
+ExtSetDelimiters=.mak,^
