@@ -24,7 +24,7 @@
 //            VERSION_DECIMAL.
 //
 
-#define VERSION_STR     "v2.01" " of " __DATE__ " at " __TIME__
-#define VERSION_DECIMAL 201
+#define VERSION_STR     "v1.0.0" " of " __DATE__ " at " __TIME__
+#define VERSION_DECIMAL 100
               
 #endif // _VERSION_H

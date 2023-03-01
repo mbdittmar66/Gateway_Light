@@ -1709,129 +1709,8 @@ BOOLEAN  UtilGotoDynTrackingPosition( LONG lPan, SHORT sTilt, USHORT usRate)
 
 VOID    UtilNextTourPoint ( VOID )
 {
-    UCHAR ucNextTour;
     
-    //
-    // If tour is not running or paused, exit
-    //
-    
-    if ( (TOUR_INVALID    == SerSlcExtStatusPayload.BasicStatus.ucActiveTour) ||
-         (TOUR_PAUSED_BIT &  SerSlcExtStatusPayload.BasicStatus.ucActiveTour) )
-    {
-        return;
-    }
-    
-    //
-    // Find next tour point, and get it going.
-    //
-    
-    for ( ++SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint; 
-            SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint < TOUR_MAX_NUMBER_OF_POINTS; 
-          ++SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint)
-    {
-        FlashRetrieveTourPoint ( SerSlcExtStatusPayload.BasicStatus.ucActiveTour, 
-                                 SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint, 
-                                &UtlActivePoint ,
-                                &ucNextTour   );
-                                
-        //
-        // If a deleted point, continue to look at next point
-        //
-        
-        if (0xFFFF == UtlActivePoint.usRate)
-            continue;
-        
-        break;
-    }
-    
-    //
-    // If no tour points were found in the requested tour, then 
-    // either end this tour, or  start the next tour.
-    //
-    
-    if (SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint >= TOUR_MAX_NUMBER_OF_POINTS)
-    {
-        SerSlcExtStatusPayload.BasicStatus.ucActiveTour = ucNextTour;
-        if (TOUR_INVALID == ucNextTour)
-        {
-            return;
-        }
-        
-        //
-        // Find first tour point, and get it going.
-        //
-    
-        for (   SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint = 0;
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint < TOUR_MAX_NUMBER_OF_POINTS; 
-              ++SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint)
-        {
-            FlashRetrieveTourPoint ( SerSlcExtStatusPayload.BasicStatus.ucActiveTour, 
-                                     SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint, 
-                                    &UtlActivePoint ,
-                                    &ucNextTour   );
-         
-            //
-            // If a deleted point, continue to look at next point
-            //
-        
-            if (0xFFFF == UtlActivePoint.usRate)
-                continue;
-        
-            break;
-            
-        } // for ...
-        
-        //
-        // If there were no valid points in the next tour, then
-        // terminate this tour.
-        //
-        
-        if ( SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint >= TOUR_MAX_NUMBER_OF_POINTS )
-        {
-            if ( ucUtlDebugMask & DEBUG_TOUR_EXCEPTION )
-            {
-                    StdPrintf (UtlQueDebugPrint,  STR_NEW_LINE "TOUR STOPPED BECAUSE NEXT TOUR IS MISSING VALID POINTS"); 
-            }
-            SerSlcExtStatusPayload.BasicStatus.ucActiveTour = TOUR_INVALID;
-            return;
-        }
-        
-    } // if (SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint >= TOUR_MAX_NUMBER_OF_POINTS)
-    
-    //
-    // A non deleted point found.  Run to this point.
-    //
-    
-    UtilGotoPolarPosition ( 10*UtlActivePoint.sAzimuth, 10*UtlActivePoint.sElevation, UtlActivePoint.usRate, 0);
-    
-    // StdPrintf(&g_SerTxQueSerPort, STR_NEW_LINE "Tour Az: %u El: %u", 
-    //    (UINT) g_TargetAbsPosPan   , (UINT) g_TargetAbsPosTilt  );
-    
-
-    //
-    // Control relays as required when traveling to a tour point.
-    //
-    
-    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX1_ON        )			
-        UtlRelayOn  (RELAY_AUX1);										    
-    else
-        UtlRelayOff (RELAY_AUX1);
-    
-    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX2_ON        )			
-        UtlRelayOn  (RELAY_AUX2);										    
-    else
-        UtlRelayOff (RELAY_AUX2);
-        
-    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_BEAM_ON       )
-        UtlLampOn();
-    else
-        UtlLampOff();
-                
-    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX3_ON       )
-        UtlRelayOn  (RELAY_AUX3);
-    else
-        UtlRelayOff (RELAY_AUX3);
-    
+ 
 } // UtilNextTourPoint ( )
 
 
@@ -1846,45 +1725,6 @@ VOID    UtilNextTourPoint ( VOID )
 
 VOID UtilBeginDwelling ( VOID )
 {
-    //
-    // If no tour is running, then skip dwell logic.
-    //
-    
-    if ( (0            != (TOUR_PAUSED_BIT & SerSlcExtStatusPayload.BasicStatus.ucActiveTour)) ||
-         (TOUR_INVALID ==                    SerSlcExtStatusPayload.BasicStatus.ucActiveTour ) )
-    {
-        return;
-    }
-    
-    //
-    // Dwell for at least 1 second.
-    //
-                    
-    SerSlcExtStatusPayload.usTourDwellCountdown = 1 | UtlActivePoint.ucDwellSec;
-    
-    //
-    // Control relays as required "on point"
-    //
-    
-    if (UtlActivePoint.ucOptions & TOUR_OPT_DWELL_PT_AUX1_ON        )
-        UtlRelayOn  (RELAY_AUX1);
-    else
-        UtlRelayOff (RELAY_AUX1);
-    
-    if (UtlActivePoint.ucOptions & TOUR_OPT_DWELL_PT_AUX2_ON        )
-        UtlRelayOn  (RELAY_AUX2);
-    else
-        UtlRelayOff (RELAY_AUX2);
-        
-    if (UtlActivePoint.ucOptions & TOUR_OPT_DWELL_PT_BEAM_ON       )
-        UtlLampOn  ();
-    else
-        UtlLampOff ();
-                
-    if (UtlActivePoint.ucOptions & TOUR_OPT_DWELL_PT_AUX3_ON       )
-        UtlRelayOn  (RELAY_AUX3);
-    else
-        UtlRelayOff (RELAY_AUX3);
         
 } // VOID UtilBeginDwelling ( VOID )
                 
@@ -4125,267 +3965,6 @@ static	UCHAR	toggle;
             
         } // case PKT_TYPE_ZEROIZE_LAMP_HOURS:
         
-        
-        case PKT_TYPE_TOUR_POINT:
-        {
-            tPAYLOAD_TOUR_POINT *pPayloadTourPoint;
-            
-            UCHAR               ucTourNumber;
-            UCHAR               ucPointNumber;
-            
-            //
-            // If this board is not intended to speak, then
-            // don't plow on.
-            //
-            
-            if ( pChannel->ucDestinationAddress != (g_BoardNumber + SLC_PROTOCOL_OFFSET) )
-            {
-                break;
-            }
-
-            g_TimeMs.PollMain = 0;
-            
-            pPayloadTourPoint = (tPAYLOAD_TOUR_POINT *) pChannel->ucPayload;
-            
-            ucTourNumber  = pPayloadTourPoint->ucTourNumber ;
-            ucPointNumber = pPayloadTourPoint->ucPointNumber;
-            
-            if ((pPayloadTourPoint->ucCommandAndControl) & SLC_TOUR_PT_COMMAND_STORE    )
-            {
-                FlashStoreTourPoint ( ucTourNumber, ucPointNumber, &pPayloadTourPoint->Point,
-                                      pPayloadTourPoint->ucNextTour);
-            }
-            
-            if ((pPayloadTourPoint->ucCommandAndControl) & SLC_TOUR_PT_COMMAND_DELETE   )
-            {
-                FlashDeleteTourPoint ( ucTourNumber, ucPointNumber );
-            }
-            
-            if ((pPayloadTourPoint->ucCommandAndControl) & SLC_TOUR_PT_COMMAND_RETRIEVE )
-            {
-                FlashRetrieveTourPoint ( ucTourNumber, ucPointNumber, &SerTourPointPayload.Point,
-                                        &SerTourPointPayload.ucNextTour);
-                
-                SerTourPointPayload.ucCommandAndControl = SLC_TOUR_PT_COMMAND_RETURNED;
-                SerTourPointPayload.ucTourNumber  = ucTourNumber;
-                SerTourPointPayload.ucPointNumber = ucPointNumber;
-                SerTourPointDestAddr = pChannel->ucSourceAddress;
-            }
-            break;
-            
-        } // case PKT_TYPE_TOUR_POINT:
-
-        
-        case PKT_TYPE_TOUR_CONTROL :
-        {
-            tPAYLOAD_TOUR_CONTROL *pPayloadTourControl;
-            
-            //
-            // If this board is not intended to speak, then
-            // don't plow on.
-            //
-            
-            if ( pChannel->ucDestinationAddress != (g_BoardNumber + SLC_PROTOCOL_OFFSET) )
-            {
-                break;
-            }
-
-            g_TimeMs.PollMain = 0;
-            
-            pPayloadTourControl = (tPAYLOAD_TOUR_CONTROL *) pChannel->ucPayload;
-            
-            //
-            // Turn OFF auto return during tour functions.
-            //
-            
-            usUtlAutoReturnCountdown = 0;  
-                
-            if (pPayloadTourControl->ucControl & TOUR_CONTROL_RUN )
-            {
-                //
-                // You cannot start a tour if one is already running
-                //    
-                
-                if (SerSlcExtStatusPayload.BasicStatus.ucActiveTour != TOUR_INVALID)
-                    break;
-                    
-                //
-                // You cannot start a tour if the SLC is in use by a JCS.
-                //                                                  
-                
-                if (SerSlcExtStatusPayload.BasicStatus.ucControllingDevice != INVALID_PROTOCOL_ADDRESS)
-                    break;
-                    
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint  = pPayloadTourControl->ucPoint;
-                
-                //
-                // Starting with the requested point number, keep
-                // looking for points until a valid point is found, 
-                // then activate that point.
-                //
-                
-                for (; SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint < TOUR_MAX_NUMBER_OF_POINTS; 
-                     ++SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint)
-                {
-                    FlashRetrieveTourPoint ( pPayloadTourControl->ucTour, 
-                                             SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint, 
-                                            &UtlActivePoint ,
-                                            &ucUtlActiveTourNext   );
-                 
-                    //
-                    // If a deleted point, continue to look at next point
-                    //
-                    
-                    if (0xFFFF == UtlActivePoint.usRate)
-                        continue;
-
-                    break;
-                }
-                
-                //
-                // If no tour points where found in the requested tour, then leave
-                //
-                
-                if (SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint >= TOUR_MAX_NUMBER_OF_POINTS)
-                {
-                    break;
-                }
-                
-                //
-                // Show the requested tour as the active tour.
-                //
-                
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTour = pPayloadTourControl->ucTour ;
-
-                //
-                // First non deleted point found.  Start tour
-                // with this point.
-                //
-                
-                // StdPrintf(&g_SerTxQueSerPort, STR_NEW_LINE "Tour: %d"      , 
-                //     SerSlcExtStatusPayload.BasicStatus.ucActiveTour );
-                // 
-                // StdPrintf(&g_SerTxQueSerPort, STR_NEW_LINE "Point: %d"     , SerSlcExtStatusPayload.BasicStatus.ucActiveTourPoint );
-                // StdPrintf(&g_SerTxQueSerPort, STR_NEW_LINE "Next Tour: %d" , ucUtlActiveTourNext    );
-                // 
-                
-                //
-                // If placed in motion to the point, then control the relays
-                // "to the point", otherwise control the relays "on the point.
-                //
-                
-                if (UtilGotoPolarPosition ( 10*UtlActivePoint.sAzimuth   , 
-                                            10*UtlActivePoint.sElevation , 
-                                            10*UtlActivePoint.usRate     ,
-                                            0 ))
-                {
-                                        
-                    //
-                    // Control relays as required when traveling to a tour point.
-                    //
-    
-                    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX1_ON        )
-                        UtlRelayOn  (RELAY_AUX1);
-                    else
-                        UtlRelayOff (RELAY_AUX1);
-        
-                    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX2_ON        )
-                        UtlRelayOn  (RELAY_AUX2);
-                    else
-                        UtlRelayOff (RELAY_AUX2);
-        
-                    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_BEAM_ON       )
-                        UtlLampOn();
-                    else
-                        UtlLampOff();
-        
-                    if (UtlActivePoint.ucOptions & TOUR_OPT_TO_PT_AUX3_ON       )
-                        UtlRelayOn  (RELAY_AUX3);
-                    else
-                        UtlRelayOff (RELAY_AUX3);
-                } else
-                {
-                    //
-                    // Control relays as required when dwelling on a tour point.
-                    //
-    
-                    UtilBeginDwelling ( );
-                }
-    
-                break;
-
-            } // if (pPayloadTourControl->ucControl & TOUR_CONTROL_RUN )
-
-            if (pPayloadTourControl->ucControl & TOUR_CONTROL_STOP  )
-            {
-                if (TOUR_INVALID == SerSlcExtStatusPayload.BasicStatus.ucActiveTour)
-                {
-                    break;
-                }
-                
-                if ( ucUtlDebugMask & DEBUG_TOUR_EXCEPTION )
-                {
-                    StdPrintf (UtlQueDebugPrint,  STR_NEW_LINE "TOUR STOPPED BY TOUR CONTROL PACKET"); 
-                }
-
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTour = TOUR_INVALID;
-                
-                UtilPolarStop ( );
-                break;
-            }
-            if (pPayloadTourControl->ucControl & TOUR_CONTROL_PAUSE )
-            {
-                if (TOUR_PAUSED_BIT & SerSlcExtStatusPayload.BasicStatus.ucActiveTour)
-                {
-                    break;
-                }
-                
-                UtilPolarStop ( );
-                
-                if ( ucUtlDebugMask & DEBUG_TOUR_EXCEPTION )
-                {
-                    StdPrintf (UtlQueDebugPrint,  STR_NEW_LINE "TOUR PAUSED BY TOUR CONTROL PACKET"); 
-                }
-                
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTour |= TOUR_PAUSED_BIT;
-                
-                break;
-            }
-            if (pPayloadTourControl->ucControl & TOUR_CONTROL_RESUME)
-            {
-                if (TOUR_INVALID == SerSlcExtStatusPayload.BasicStatus.ucActiveTour)
-                {
-                    break;
-                }
-                if (!(TOUR_PAUSED_BIT & SerSlcExtStatusPayload.BasicStatus.ucActiveTour))
-                {
-                    break;
-                }
-                
-                //
-                // Clear paused bit
-                //
-                
-                SerSlcExtStatusPayload.BasicStatus.ucActiveTour &= ~TOUR_PAUSED_BIT;
-                
-                g_TargetAbsPosPan       = 10*UtlActivePoint.sAzimuth + SerSlcMiscSetupPayload.usPanHomeOffset;
-                g_TargetAbsPosTilt      = 10*UtlActivePoint.sElevation + SerSlcMiscSetupPayload.usTiltHomeOffset;
-                g_PolarRate             = UtlActivePoint.usRate;
-                g_PolarCoordMode        = TRUE;
-                g_PolarIter             = 0;
-        
-                if ( ucUtlDebugMask & DEBUG_TOUR_EXCEPTION )
-                {
-                        StdPrintf (UtlQueDebugPrint,  STR_NEW_LINE "TOUR RESUMED BY TOUR CONTROL PACKET"); 
-                }
-                
-                break;
-            }
-            
-            break;
-            
-        } // case PKT_TYPE_TOUR_CONTROL :
-        
         case PKT_TYPE_DO_CALIBRATION :
         {
             SER_PRB_CONFIG_PACKET    TxPacket;
@@ -6579,6 +6158,15 @@ UINT UtilSqrt ( LONG n )
 
 } // UtilSqrt ( )
 
+	enum pelco_handling			  // mbdpelco
+	{
+		extended,
+		jcs_packet,
+		position_rel_packet
+	};
+
+	UINT		PanPosAbs,TiltPosAbs;		// mbdpelco
+
 //=============================================================================
 // Function   : PelcoProcessCommand( )
 // Purpose    : This function decodes a Pelco D command and issues SV command.
@@ -6589,39 +6177,71 @@ UINT UtilSqrt ( LONG n )
 VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 {
 	tPAYLOAD_JCS_STATUS	JcsStatusPayload;
+	tPAYLOAD_DO_POSITION_SL_REL DoPositionSLRelativePayload;
 	static UCHAR ucZoomSpeed = 3;	// set to max zoom speed
 //	tPresetPolarPos  *pTempPresetPolarPos;  // mbd
 	UINT		temp1,temp2;
 	SHORT		temp3,temp4,sPreset_Tilt_Rel;
 	LONG		lPreset_Pan_Rel;
+	UCHAR		PanPos_MSB, PanPos_LSB,TiltPos_MSB, TiltPos_LSB;	 // mbdpelco
+	tSER_PELCO_PACKET TxPelcoPacket;								 // mbdpelco
+	enum		pelco_handling   pelco_route = jcs_packet ;  // // mbdpelco signals "extended" Pelco commands, not to be treated as a JCS packet !
+//	UINT		PanPosAbs,TiltPosAbs;		// mbdpelco
+   	UINT		temp5,temp6;
 
 	StdMemClr(&JcsStatusPayload, sizeof(JcsStatusPayload));			   // mbdtest
+
 	
 	// Initialize X, Y, Z values to "center"
 	JcsStatusPayload.ucX = 127;
 	JcsStatusPayload.ucY = 127;
 	JcsStatusPayload.ucZ = 127;
+	JcsStatusPayload.ucByte4  = JCS_STAT_B4_INHIBIT_SLC_RESPONSE;
 
 	// Treat incoming Pelco D command as a Joystick Status packet from SerPort that needs to be routed
 	StdMemClr(&g_RoutedRxSerPortPacket, sizeof(g_RoutedRxSerPortPacket));
-    g_RoutedRxSerPortPacket.Preamble.SrcAddr       = g_BoardNumber + SLC_SERPORT_PROTOCOL_OFFSET;
-    
-    if(pChannel->ucDestinationAddress <= 1)
-    {
-    	g_RoutedRxSerPortPacket.Preamble.DestAddr      = g_BoardNumber + SLC_PROTOCOL_OFFSET;		// if address is set to 0 or 1, route to SLC it is connected to
-    } 
-	else
-	{
-		g_RoutedRxSerPortPacket.Preamble.DestAddr      = pChannel->ucDestinationAddress;   // Needs to be in the range of 0x10 to 0x1F	
-	}
+	StdMemClr(&g_RoutedRxEthPortPacket, sizeof(g_RoutedRxEthPortPacket)); // mbdpelco
 
-    g_RoutedRxSerPortPacket.Preamble.PacketType    = PKT_TYPE_JCS_STATUS;
-    g_RoutedRxSerPortPacket.Preamble.PayloadLength = 8;	  // extended JCS packet. Was 5
-    	
+	if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+	{	 
+		g_RoutedRxSerPortPacket.Preamble.SrcAddr       = g_BoardNumber + SLC_SERPORT_PROTOCOL_OFFSET;
+		if(pChannel->ucDestinationAddress <= 1)
+    	{
+    		g_RoutedRxSerPortPacket.Preamble.DestAddr      = g_BoardNumber + SLC_PROTOCOL_OFFSET;		// if address is set to 0 or 1, route to SLC it is connected to
+    	} 
+		else
+		{
+		g_RoutedRxSerPortPacket.Preamble.DestAddr      = pChannel->ucDestinationAddress;   // Needs to be in the range of 0x10 to 0x1F	
+		}
+		g_RoutedRxSerPortPacket.Preamble.PacketType    = PKT_TYPE_JCS_STATUS;
+		g_RoutedRxSerPortPacket.Preamble.PayloadLength = 8;	  // extended JCS packet. Was 5
+
+
+	}
+	else if	( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+	{
+		g_RoutedRxEthPortPacket.Preamble.SrcAddr       = g_BoardNumber + SLC_ETHPORT_PROTOCOL_OFFSET ;
+		if(pChannel->ucDestinationAddress <= 1)
+    	{
+    		g_RoutedRxEthPortPacket.Preamble.DestAddr      = g_BoardNumber + SLC_PROTOCOL_OFFSET;		// if address is set to 0 or 1, route to SLC it is connected to
+    	} 
+		else
+		{
+			g_RoutedRxEthPortPacket.Preamble.DestAddr      = pChannel->ucDestinationAddress;   // Needs to be in the range of 0x10 to 0x1F	
+		}
+		g_RoutedRxEthPortPacket.Preamble.PacketType    = PKT_TYPE_JCS_STATUS;
+		g_RoutedRxEthPortPacket.Preamble.PayloadLength = 8;	  // extended JCS packet. Was 5
+			   		
+	}
+    
+    
+
+    
+        	
 	if(!CHECK_BIT(pChannel->ucPayload[Command2],ExtendedCommand) )	// check to see if "Extended Command" bit (LSB of second command byte) is set
 	{
 		// Standard Command handler
-		
+		DEBUG_PIN_4 = 1;			
 		if(CHECK_BIT(pChannel->ucPayload[Command2],ZoomOut) )
 		{
 			// Handle "Zoom Wide/Out" bit
@@ -6654,6 +6274,15 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 			// Handle "Right" bit
 			JcsStatusPayload.ucX = 127 + ( (pChannel->ucPayload[Data1] & 0x3F) * 2);	  // scale speed based on 0-63 (0x3F) proportional range, mask so 0xFF ("Turbo" speed) looks like 0x3F
 		}
+
+		if (  (pChannel->ucPayload[Command1] == 0x00) &&   (pChannel->ucPayload[Command2] == 0x00) )  // full stop
+		{
+			JcsStatusPayload.ucX = 127;
+			JcsStatusPayload.ucY = 127;
+			JcsStatusPayload.ucZ = 127;
+		}
+
+
 	}
 	else
 	{
@@ -6661,6 +6290,7 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 		switch(pChannel->ucPayload[Command2])
 		{
 			case SetPreset:
+				pelco_route = extended;
 				ucFlashActivePresetNum = pChannel -> ucPayload[Data2];  // grab the preset number from PELCO stream,
 				if (ucFlashActivePresetNum > 0x20)  // user trying to set HOME via PELCO-D ( which is preset 0x22 ), or any preset greater than 0x20
 				{
@@ -6683,6 +6313,7 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 				break;
 
 			case GoToPreset:
+				 pelco_route = extended;
 				 ucFlashActivePresetNum = pChannel -> ucPayload[Data2];
 				 if ( ucFlashActivePresetNum == 0x22 )	  // this is the case if the PelcoD "HOME" preset is set.  Always use the SLC home preset.
 				{
@@ -6728,6 +6359,8 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 				break;
 
 			case SetAuxiliary:
+				 //g_DynTrackingMode = 0;
+				pelco_route = jcs_packet;
 				switch (pChannel->ucPayload[Data2])
 				{
 					case 0x01:
@@ -6743,7 +6376,7 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 						break;
 
 					case 0x04:
-						JcsStatusPayload.ucByte5 = JCS_STAT_B5_AUX4_ON;	   
+						JcsStatusPayload.ucByte5 = JCS_STAT_B5_AUX4_ON;
 						break;
 
 					case 0x05:
@@ -6765,8 +6398,11 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 				break;
 
 			case ClearAuxiliary:
+				 //g_DynTrackingMode = 0;
+				pelco_route = jcs_packet;
 				switch (pChannel->ucPayload[Data2])
 				{
+
 					case 0x01:
 						JcsStatusPayload.ucByte4 = JCS_STAT_B4_AUX1_OFF;
 						break;
@@ -6803,26 +6439,244 @@ VOID _reentrant PelcoProcessCommand ( tProtocolChannels *pChannel )
 				break;
 
 			case SetZoomSpeed:	// used for beam width speed
+				pelco_route = extended;
 				ucZoomSpeed = pChannel->ucPayload[Data2];
 				break;
 
 			case SetFocusSpeed:	// not currently used
-				break;				 
+				pelco_route = extended;
+				break;
+
+			case SetPanPosAbs:			// mbdpelco
+				pelco_route = extended;
+				PanPos_MSB = pChannel->ucPayload[Data1];
+				PanPos_LSB = pChannel->ucPayload[Data2];
+				PanPosAbs =    (UINT)(PanPos_MSB <<8) + (UINT)PanPos_LSB;
+				PanPosAbs = PanPosAbs/10;  // tenths of a degree for use in SL relative packet
+ 				break;
+				
+			case SetTiltPosAbs:		  // mbdpelco
+				pelco_route = extended;
+				TiltPos_MSB = pChannel->ucPayload[Data1];
+				TiltPos_LSB = pChannel->ucPayload[Data2];
+				//TiltPosAbs =    (UINT)(TiltPos_MSB <<8) + (UINT)TiltPos_LSB;
+				temp6 = (UINT)(TiltPos_MSB <<8) + (UINT)TiltPos_LSB;	  // temp6 is in pelco coords
+				if ( (temp6<=35999) && (temp6>(35999-g_PotReader.TiltRange/2) ) )		// upper quadrant
+				{
+					 TiltPosAbs = 35999 + g_PotReader.TiltRange/2 -temp6 ;
+				}
+				else if ( (temp6 >=0) && (temp6<= g_PotReader.TiltRange/2) )	   // lower quadrant
+				{
+					 TiltPosAbs =  (g_PotReader.TiltRange/2) - temp6;
+				}
+				TiltPosAbs = TiltPosAbs/10;  // tenths of a degree for use in SL relative packet
+				break;
+
+			case SetZoomPosAbs:	// not currently used
+				pelco_route = position_rel_packet; //
+				DoPositionSLRelativePayload.sAzimuth = PanPosAbs;  // just use current value of Az
+				DoPositionSLRelativePayload.sElevation = TiltPosAbs;  // 
+				DoPositionSLRelativePayload.usGrowth0 = 0x0001;		// dyn tkg
+				DoPositionSLRelativePayload.usGrowth1 = 0x0000;
+				DoPositionSLRelativePayload.usRate = 0xFFFF;	 // max speed
+
+			
+				if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+				{
+					StdMemClr(&g_RoutedRxSerPortPacket, sizeof(g_RoutedRxSerPortPacket));
+    				g_RoutedRxSerPortPacket.Preamble.SrcAddr       = g_BoardNumber + SLC_SERPORT_PROTOCOL_OFFSET;
+    
+    				if(pChannel->ucDestinationAddress <= 1)
+    				{
+    					g_RoutedRxSerPortPacket.Preamble.DestAddr      = g_BoardNumber + SLC_PROTOCOL_OFFSET;		// if address is set to 0 or 1, route to SLC it is connected to
+    				} 
+    				g_RoutedRxSerPortPacket.Preamble.PacketType    = PKT_TYPE_DO_POSITION_SL_REL;
+    				g_RoutedRxSerPortPacket.Preamble.PayloadLength = 10;	  //
+    			} 
+				else if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+				{
+					StdMemClr(&g_RoutedRxEthPortPacket, sizeof(g_RoutedRxEthPortPacket));
+    				g_RoutedRxEthPortPacket.Preamble.SrcAddr       = g_BoardNumber + SLC_ETHPORT_PROTOCOL_OFFSET;
+    
+    				if(pChannel->ucDestinationAddress <= 1)
+    				{
+    					g_RoutedRxEthPortPacket.Preamble.DestAddr      = g_BoardNumber + SLC_PROTOCOL_OFFSET;		// if address is set to 0 or 1, route to SLC it is connected to
+    				} 
+    				g_RoutedRxEthPortPacket.Preamble.PacketType    = PKT_TYPE_DO_POSITION_SL_REL;
+    				g_RoutedRxEthPortPacket.Preamble.PayloadLength = 10;	  //
+
+				}
+
+								   
+				break;
+
+			case QueryPanPos:	  // mbdpelco
+				// reply with Abs pan position: ResponsePanPosition
+				pelco_route = extended ;//extended_Pelco = TRUE;
+				StdMemClr(&TxPelcoPacket, sizeof(TxPelcoPacket));
+				// determine which SLC. "Pelco" addresses range from 1 to 16
+
+				//PanPos_MSB = (UCHAR)((SerSlcExtStatusPayload.BasicStatus.sAzimuth & 0xFF00) >>8) ;
+				//PanPos_LSB = (UCHAR)(SerSlcExtStatusPayload.BasicStatus.sAzimuth & 0x00FF );
+
+			   // below code to make compatible with PELCO-D statndard.  Need to RETURN hundredths of a degree, always POSITIVE...1 to 35999.  Need to ignore any offset
+				PanPos_MSB = (UCHAR)( (g_PotReader.PanFb & 0xFF00) >> 8);
+				PanPos_LSB = (UCHAR)(g_PotReader.PanFb & 0x00FF);
+
+			    TxPelcoPacket.addr = pChannel->ucDestinationAddress;
+ 				TxPelcoPacket.cmd1 = 0x00;                         
+ 				TxPelcoPacket.cmd2 = 0x59;	
+ 				TxPelcoPacket.data1 = PanPos_MSB;                  
+ 				TxPelcoPacket.data2 = PanPos_LSB;                  
+				if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+				{	 
+			   		SerTransmitPelcoPacket(&g_SerTxQueSerPort,&TxPelcoPacket);
+			   	}
+			   	else if	( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+			   	{
+			   		SerTransmitPelcoPacket(&g_SerTxQueEthPort,&TxPelcoPacket);
+				}
+				else
+				{
+				}
+				 	
+				break;
+
+			case QueryTiltPos:		// mbdpelco
+				// reply with Abs tilt position: ResponseTiltPosition
+				pelco_route = extended; // extended_Pelco = TRUE;
+				StdMemClr(&TxPelcoPacket, sizeof(TxPelcoPacket));
+ //				TiltPos_MSB = (UCHAR)((SerSlcExtStatusPayload.BasicStatus.sElevation & 0xFF00) >>8) ;
+ //				TiltPos_LSB = (UCHAR)(SerSlcExtStatusPayload.BasicStatus.sElevation & 0x00FF );
+
+			   // below code to make compatible with PELCO-D statndard.  Need to RETURN hundredths of a degree, always POSITIVE...1 to 35999.  Need to ignore any offset
+				if (g_PotReader.TiltFb >= 0 && g_PotReader.TiltFb <= (g_PotReader.TiltRange/2) )
+				{
+					temp5 = (UINT)g_PotReader.TiltRange/2 - g_PotReader.TiltFb;
+				}
+				else if ( g_PotReader.TiltFb > (g_PotReader.TiltRange/2) && g_PotReader.TiltFb <= g_PotReader.TiltRange )
+				{
+					temp5 = (UINT)35999 + (g_PotReader.TiltRange/2) - g_PotReader.TiltFb;
+				}
+
+				TiltPos_MSB = (UCHAR)( (temp5 & 0xFF00) >> 8);
+				TiltPos_LSB = (UCHAR)(temp5 & 0x00FF);
+
+				TxPelcoPacket.addr = pChannel->ucDestinationAddress;
+				TxPelcoPacket.cmd1 = 0x00;                 
+ 				TxPelcoPacket.cmd2 = 0x5B;		
+ 				TxPelcoPacket.data1 = TiltPos_MSB;         
+ 				TxPelcoPacket.data2 = TiltPos_LSB;         
+				if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+				{	 
+			   		SerTransmitPelcoPacket(&g_SerTxQueSerPort,&TxPelcoPacket);
+			   	}
+			   	else if	( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+			   	{
+			   		SerTransmitPelcoPacket(&g_SerTxQueEthPort,&TxPelcoPacket);
+				}
+				else
+				{
+				} 	
+							
+				break;
+
+			case QueryZoomPos:
+				// reply with Abs zoom position: ResponseZoomPosition - for now just reply with zero since no position pot
+				pelco_route = extended; // extended_Pelco = TRUE;
+				StdMemClr(&TxPelcoPacket, sizeof(TxPelcoPacket));
+ 
+				TxPelcoPacket.addr = pChannel->ucDestinationAddress;
+				TxPelcoPacket.cmd1 = 0x00;                 
+ 				TxPelcoPacket.cmd2 = 0x5D;		
+ 				TxPelcoPacket.data1 = 0x00;          
+ 				TxPelcoPacket.data2 = 0x00;          
+				if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+				{	 
+			   		SerTransmitPelcoPacket(&g_SerTxQueSerPort,&TxPelcoPacket);
+			   	}
+			   	else if	( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+			   	{
+			   		SerTransmitPelcoPacket(&g_SerTxQueEthPort,&TxPelcoPacket);
+				}
+				else
+				{
+				} 	
+							
+				break;
+							
+						 
+		}	// switch/case
+	} // 	if(!CHECK_BIT(pChannel->ucPayload[Command2],ExtendedCommand) )
+																													
+						 // mbdpelco
+	if ( pelco_route == jcs_packet )
+	{
+		g_DynTrackingMode = FALSE;
+		
+		if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+		{
+			StdMemCopy(g_RoutedRxSerPortPacket.pPayload, (UCHAR*) &JcsStatusPayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength); 
+
+			if (g_RoutedRxSerPortPacket.Preamble.DestAddr == g_BoardNumber + SLC_PROTOCOL_OFFSET)
+			{
+				pChannel->ucDestinationAddress = g_RoutedRxSerPortPacket.Preamble.DestAddr;
+				pChannel->ucSourceAddress = g_RoutedRxSerPortPacket.Preamble.SrcAddr;
+				pChannel->ucPayloadLength = 8;			// extended JCS packet, was 5
+				pChannel->ucPacketType = PKT_TYPE_JCS_STATUS;//g_RoutedRxSerPortPacket.Preamble.PacketType;
+				StdMemCopy(pChannel->ucPayload, g_RoutedRxSerPortPacket.pPayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength); 
+				UtilProcessPacket ( pChannel );
+			}
+		}
+		else if (  ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+		{
+			StdMemCopy(g_RoutedRxEthPortPacket.pPayload, (UCHAR*) &JcsStatusPayload, g_RoutedRxEthPortPacket.Preamble.PayloadLength);
+
+			if (g_RoutedRxEthPortPacket.Preamble.DestAddr == g_BoardNumber + SLC_PROTOCOL_OFFSET)
+			{
+				pChannel->ucDestinationAddress = g_RoutedRxEthPortPacket.Preamble.DestAddr;
+				pChannel->ucSourceAddress = g_RoutedRxEthPortPacket.Preamble.SrcAddr;
+				pChannel->ucPayloadLength = 8;			// extended JCS packet, was 5
+				pChannel->ucPacketType = PKT_TYPE_JCS_STATUS;//g_RoutedRxEthPortPacket.Preamble.PacketType;
+				StdMemCopy(pChannel->ucPayload, g_RoutedRxEthPortPacket.pPayload, g_RoutedRxEthPortPacket.Preamble.PayloadLength); 
+				UtilProcessPacket ( pChannel );
+			}
+
 		}
 	}
-
-	StdMemCopy(g_RoutedRxSerPortPacket.pPayload, (UCHAR*) &JcsStatusPayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength); 
-
-	if (g_RoutedRxSerPortPacket.Preamble.DestAddr == g_BoardNumber + SLC_PROTOCOL_OFFSET)
+	else if (pelco_route ==  position_rel_packet)																  
 	{
-		pChannel->ucDestinationAddress = g_RoutedRxSerPortPacket.Preamble.DestAddr;
-		pChannel->ucSourceAddress = g_RoutedRxSerPortPacket.Preamble.SrcAddr;
-		pChannel->ucPayloadLength = 8;			// extended JCS packet, was 8
-		pChannel->ucPacketType = g_RoutedRxSerPortPacket.Preamble.PacketType;
-		StdMemCopy(pChannel->ucPayload, g_RoutedRxSerPortPacket.pPayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength); 
-		UtilProcessPacket ( pChannel );
-	}
+				if ( ((pChannel->ucSourceAddress) & 0xF0)  == SLC_SERPORT_PROTOCOL_OFFSET )
+				{
+					StdMemCopy(g_RoutedRxSerPortPacket.pPayload, (UCHAR*) &DoPositionSLRelativePayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength);
+					StdMemCopy(pChannel->ucPayload, g_RoutedRxSerPortPacket.pPayload, g_RoutedRxSerPortPacket.Preamble.PayloadLength); 
+					pChannel->ucDestinationAddress = g_RoutedRxSerPortPacket.Preamble.DestAddr;
+					pChannel->ucSourceAddress = g_RoutedRxSerPortPacket.Preamble.SrcAddr;
+					pChannel->ucPayloadLength = g_RoutedRxSerPortPacket.Preamble.PayloadLength;			
+					pChannel->ucPacketType = g_RoutedRxSerPortPacket.Preamble.PacketType;
+					UtilProcessPacket ( pChannel );
+				}
+				else if (  ((pChannel->ucSourceAddress) & 0xF0)  == SLC_ETHPORT_PROTOCOL_OFFSET )
+				{
+					StdMemCopy(g_RoutedRxEthPortPacket.pPayload, (UCHAR*) &DoPositionSLRelativePayload, g_RoutedRxEthPortPacket.Preamble.PayloadLength);
+					StdMemCopy(pChannel->ucPayload, g_RoutedRxEthPortPacket.pPayload, g_RoutedRxEthPortPacket.Preamble.PayloadLength); 
+					pChannel->ucDestinationAddress = g_RoutedRxEthPortPacket.Preamble.DestAddr;
+					pChannel->ucSourceAddress = g_RoutedRxEthPortPacket.Preamble.SrcAddr;
+					pChannel->ucPayloadLength = g_RoutedRxEthPortPacket.Preamble.PayloadLength;			
+					pChannel->ucPacketType = g_RoutedRxEthPortPacket.Preamble.PacketType;
+					UtilProcessPacket ( pChannel );
 
+				}
+
+	}
+	else	// extended, do nothing
+	{
+		StdMemClr(&TxPelcoPacket, sizeof(TxPelcoPacket));
+		StdMemClr(&g_RoutedRxSerPortPacket, sizeof(g_RoutedRxSerPortPacket));
+		StdMemClr(&g_RoutedRxEthPortPacket, sizeof(g_RoutedRxEthPortPacket));
+	}
+			DEBUG_PIN_4 = 0;
 } // PelcoProcessCommand ()
+
  
 

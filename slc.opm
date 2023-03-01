@@ -1,4 +1,4 @@
--G "c:\firmware_local\smartview fw\slc firmware source code v2.01"
+-G "c:\firmware_local\gateway_light"
 -err "slc.err"
 -r
 -f "slc.mak"

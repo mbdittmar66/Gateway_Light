@@ -6,7 +6,7 @@
 #
 
 PROJ    = slc
-PROJDIR = c:\firmware_local\smartview fw\slc firmware source code v2.01
+PROJDIR = c:\firmware_local\gateway_light
 PRODDIR = c:\program files (x86)\tasking\cc51 v7.2r6
 
 BINDIR  = $(PRODDIR)\bin
@@ -20,21 +20,21 @@ OPT_CC  = -AN -I"$(PRODDIR)\include" -Ml -rl -ivo=0x0000 -Cc51f04x -O0 -x0 -b0 -
 OPT_MPP = -DCLR_EA=TRUE -I"$(PRODDIR)\include" -DMODEL=LARGE -DREGBANK=0 -DVSTACK=YES -DVIRT_STACK=1000 -DHEAP=50 -DPROTECT=YES -DSTACKLENGTH=100
 OPT_AS  = PR("${*F}.lst") PL(60) PW(104) RB(0) -Cc51f04x -I"$(PRODDIR)\include"
 OPT_LK  = -lprintflmf -lscanflsf -lc51lp MP -L"$(PRODDIR)\lib" RS(256) RE(XD(0,0)) PR("slc.l51") LI PL SB PW(78) -e1 -e2
-OPT_FLASH = -usb -dir "c:\firmware_local\smartview fw\slc firmware source code v2.01" -actions=FPV "slc.hex" -go -level=0 -ecprotocol=jtag
+OPT_FLASH = -usb -dir "c:\firmware_local\gateway_light" -actions=FPV "slc.hex" -go -level=0 -ecprotocol=jtag
 OPT_XVW = -tcfg disilabsjtg51.cfg -D dev,- --rocfg_ecprotocol=jtag --load_application_download=false --load_application_signal=false --load_application_program_reset=false --load_application_target_reset=false --load_application_goto_main=false -a 16 -b 16 -s 26 -C c51f04x
 OPT_PROC = Selected SFR file: regc51f04x.sfr         On chip RAM size: 256
 
 all : "$(PROJ).abs" "$(PROJ).hex"
 
 "utils.src" : "utils.c" "c8051f040.h" "slc_init.h" "slprotocol.h" "serial.h" "utils.h"
-"utils.src" : "main.h" "stdlib.h" "timers.h" "version.h" "flash.h" "pelco.h" <1592333360>
+"utils.src" : "main.h" "stdlib.h" "timers.h" "version.h" "flash.h" "pelco.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "utils.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"utils.obj" : "utils.src" <1547762697>
+"utils.obj" : "utils.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "utils.src" -f <<EOF
 	"OJ($@)"
@@ -42,14 +42,14 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "main.src" : "main.c" "c8051f040.h" "slprotocol.h" "slc_init.h" "utils.h" "serial.h"
-"main.src" : "main.h" "spi.h" "timers.h" "stdlib.h" "version.h" "flash.h" <1592335316>
+"main.src" : "main.h" "spi.h" "timers.h" "stdlib.h" "version.h" "flash.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "main.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"main.obj" : "main.src" <1547762697>
+"main.obj" : "main.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "main.src" -f <<EOF
 	"OJ($@)"
@@ -57,14 +57,14 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "slc_init.src" : "slc_init.c" "c8051f040.h" "slprotocol.h" "slc_init.h" "utils.h"
-"slc_init.src" : "serial.h" "timers.h" "stdlib.h" "spi.h" "version.h" "flash.h" <1547762697>
+"slc_init.src" : "serial.h" "timers.h" "stdlib.h" "spi.h" "version.h" "flash.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "slc_init.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"slc_init.obj" : "slc_init.src" <1547762697>
+"slc_init.obj" : "slc_init.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "slc_init.src" -f <<EOF
 	"OJ($@)"
@@ -72,28 +72,28 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "serial.src" : "serial.c" "c8051f040.h" "slprotocol.h" "serial.h" "timers.h" "main.h"
-"serial.src" : "stdlib.h" "spi.h" "utils.h" "slc_init.h" <1551380289>
+"serial.src" : "stdlib.h" "spi.h" "utils.h" "slc_init.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "serial.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"serial.obj" : "serial.src" <1547762697>
+"serial.obj" : "serial.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "serial.src" -f <<EOF
 	"OJ($@)"
 	${EMPTY} -ne $(OPT_AS)
 	EOF
 
-"spi.src" : "spi.c" "c8051f040.h" "slprotocol.h" "spi.h" "serial.h" "timers.h" <1547762697>
+"spi.src" : "spi.c" "c8051f040.h" "slprotocol.h" "spi.h" "serial.h" "timers.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "spi.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"spi.obj" : "spi.src" <1547762697>
+"spi.obj" : "spi.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "spi.src" -f <<EOF
 	"OJ($@)"
@@ -101,14 +101,14 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "stdlib.src" : "stdlib.c" "c8051f040.h" "slprotocol.h" "serial.h" "stdlib.h" "spi.h"
-"stdlib.src" : "flash.h" <1547762697>
+"stdlib.src" : "flash.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "stdlib.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"stdlib.obj" : "stdlib.src" <1547762697>
+"stdlib.obj" : "stdlib.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "stdlib.src" -f <<EOF
 	"OJ($@)"
@@ -116,27 +116,27 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "timers.src" : "timers.c" "c8051f040.h" "slprotocol.h" "serial.h" "timers.h" "main.h"
-"timers.src" : "utils.h" "slc_init.h" "stdlib.h" <1547762697>
+"timers.src" : "utils.h" "slc_init.h" "stdlib.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "timers.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"timers.obj" : "timers.src" <1547762697>
+"timers.obj" : "timers.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "timers.src" -f <<EOF
 	"OJ($@)"
 	${EMPTY} -ne $(OPT_AS)
 	EOF
 
-"slc_cstart.src" : "slc_cstart.asm" <1547762697>
+"slc_cstart.src" : "slc_cstart.asm" <1677689639>
 	@echo Macro preprocessing ${*F}.asm
 	@"$(PRODDIR)\bin\mpp51.exe" "slc_cstart.asm" -f <<EOF
 	${EMPTY} -o "$@" $(OPT_MPP)
 	EOF
 
-"slc_cstart.obj" : "slc_cstart.src" <1547762697>
+"slc_cstart.obj" : "slc_cstart.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "slc_cstart.src" -f <<EOF
 	"OJ($@)"
@@ -144,14 +144,14 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "flash.src" : "flash.c" "c8051f040.h" "slprotocol.h" "slc_init.h" "utils.h" "serial.h"
-"flash.src" : "timers.h" "main.h" "spi.h" "stdlib.h" "flash.h" "version.h" <1547762697>
+"flash.src" : "timers.h" "main.h" "spi.h" "stdlib.h" "flash.h" "version.h" <1677689639>
 	@echo Compiling ${*F}.c
 	@"$(PRODDIR)\bin\cc51.exe" "flash.c" -f <<EOF 
 	${separate "\n" -o "$@" -ne $(OPT_CC)}
 	EOF
 
 
-"flash.obj" : "flash.src" <1547762697>
+"flash.obj" : "flash.src" <1677689639>
 	@echo Assembling ${*F}.src
 	@"$(PRODDIR)\bin\asm51.exe" "flash.src" -f <<EOF
 	"OJ($@)"
@@ -159,7 +159,7 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	EOF
 
 "$(PROJ).out" : "utils.obj" "main.obj" "slc_init.obj" "serial.obj" "spi.obj" "stdlib.obj"
-"$(PROJ).out" : "timers.obj" "slc_cstart.obj" "flash.obj" <1592336298>
+"$(PROJ).out" : "timers.obj" "slc_cstart.obj" "flash.obj" <1677689639>
 	@echo Linking to ${*F}.out
 	@"$(PRODDIR)\bin\link51.exe" -f <<EOF 
 	${separate ",\n" $(match .obj $!) $(match .lib $!)}
@@ -167,11 +167,11 @@ all : "$(PROJ).abs" "$(PROJ).hex"
 	TO "$@"
 	EOF
 
-"$(PROJ).abs" : "$(PROJ).out" <1547762697>
+"$(PROJ).abs" : "$(PROJ).out" <1677689639>
 	@echo Creating IEEE-695 absolute file ${*F}.abs
 	@"$(PRODDIR)\bin\ieee51.exe" -ne  $(IEEE_OPT) $! "$@"
 
-"$(PROJ).hex" : "$(PROJ).out" <1547762697>
+"$(PROJ).hex" : "$(PROJ).out" <1677689639>
 	@echo Creating Intel Hex Records file ${*F}.hex
 	@"$(PRODDIR)\bin\ihex51.exe" -ne  $(IHEX_OPT) $! "$@"
 

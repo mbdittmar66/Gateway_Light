@@ -514,9 +514,9 @@ VOID InitializeSLC ( VOID )
     // Initialize all motors off.
     //
     
-    UtilSetMotorSpeed ( MOTOR_1, 128 );
-    UtilSetMotorSpeed ( MOTOR_2, 128 );
-    UtilSetMotorSpeed ( MOTOR_3, 128 );
+//    UtilSetMotorSpeed ( MOTOR_1, 128 );			  mbd_gateway_lite
+//    UtilSetMotorSpeed ( MOTOR_2, 128 );
+//    UtilSetMotorSpeed ( MOTOR_3, 128 );
 
 	g_TimeMs.MotorTimeout = SIXTY_SECONDS;		// v1.73
 
@@ -524,7 +524,7 @@ VOID InitializeSLC ( VOID )
     // Tell the PRB to send up config data on next PRB_SLAVE_SPEAK packet.
     //
 
-    g_PrbSlaveSpeakPayload |= SLC_POWER_FAILED_BIT;
+//    g_PrbSlaveSpeakPayload |= SLC_POWER_FAILED_BIT;		mbd_gateway_lite
     
     //
     // Initialize the polling table...
